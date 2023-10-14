@@ -19,6 +19,7 @@ on:
 jobs:
   terraform:
     name: "Terraform"
+    if: ${{ github.event.inputs.action != 'terraform_destroy' }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -34,7 +35,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2 
+          aws-region: ${{ secrets.AWS_REGION }}
       
       - name: Terraform Format
         id: fmt
@@ -43,6 +44,10 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        env:
+          TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_tf_bucket: ${{ secrets.TF_STATE_BUCKET }}
       
       - name: Terraform Validate
         id: validate
@@ -55,6 +60,8 @@ jobs:
         continue-on-error: true
         env:
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_tf_bucket: ${{ secrets.TF_STATE_BUCKET }}
 
       - name: Update Pull Request
         uses: actions/github-script@v6
@@ -95,6 +102,8 @@ jobs:
         run: terraform apply -auto-approve -input=false
         env:
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_tf_bucket: ${{ secrets.TF_STATE_BUCKET }}
   
   terraform_destroy:
     name: "Terraform Destroy"
@@ -114,17 +123,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2 
-
-      - name: Terraform Init
-        id: init
-        run: terraform init
-      
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
+          aws-region: ${{ secrets.TF_STATE_BUCKET }}
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -input=false
         env:
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_tf_bucket: ${{ secrets.TF_STATE_BUCKET }}
