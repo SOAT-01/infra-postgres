@@ -16,9 +16,6 @@ on:
         - terraform
         - terraform_destroy
 
-permissions:
-  contents: read
-
 jobs:
   terraform:
     name: "Terraform"
