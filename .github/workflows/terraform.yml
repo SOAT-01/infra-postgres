@@ -51,6 +51,7 @@ jobs:
         run: terraform plan -no-color -input=false
         continue-on-error: true
         env:
+          TF_VAR_db_user: ${{ secrets.DB_USER }}
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
 
@@ -92,6 +93,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
         env:
+          TF_VAR_db_user: ${{ secrets.DB_USER }}
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
   
@@ -122,5 +124,6 @@ jobs:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -input=false
         env:
+          TF_VAR_db_user: ${{ secrets.DB_USER }}
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}

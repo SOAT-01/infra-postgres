@@ -9,7 +9,6 @@ data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.77.0"
 
   name                 = "fast_food"
   cidr                 = "10.0.0.0/16"
@@ -67,11 +66,12 @@ resource "aws_db_instance" "fast_food" {
   allocated_storage      = 5
   engine                 = "postgres"
   engine_version         = "15.3"
-  username               = "db_master_ff"
+  username               = var.db_user
   password               = var.db_password
   db_subnet_group_name   = aws_db_subnet_group.fast_food.name
   vpc_security_group_ids = [aws_security_group.rds.id]
   parameter_group_name   = aws_db_parameter_group.fast_food.name
   publicly_accessible    = true
   skip_final_snapshot    = true
+  apply_immediately      = true
 }
