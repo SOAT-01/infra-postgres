@@ -8,4 +8,13 @@ terraform {
       version = ">= 3.20.0"
     }
   }
+  
+  backend "s3" {
+    bucket = "tf-state-bucket-4567"
+    key    = "rds/main.tf"
+    region = "us-east-1"
+    profile = "default"
+    encrypt = true
+    dynamodb_table = "terraform-state-lock"
+  }
 }
