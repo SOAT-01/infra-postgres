@@ -4,13 +4,13 @@
 output "rds_hostname" {
   description = "RDS instance hostname"
   value       = aws_db_instance.fast_food.address
-  sensitive   = false
+  sensitive   = true
 }
 
 output "rds_port" {
   description = "RDS instance port"
   value       = aws_db_instance.fast_food.port
-  sensitive   = false
+  sensitive   = true
 }
 
 output "rds_username" {
