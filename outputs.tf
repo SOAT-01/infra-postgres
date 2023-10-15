@@ -3,7 +3,7 @@
 
 output "vpc_id" {
   description = "VPC Id"
-  value       = try(aws_vpc.this[0].id, null)
+  value       = try(module.vpc.aws_vpc.this[0].id, null)
   sensitive   = false
 }
 
