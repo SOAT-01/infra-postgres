@@ -2,13 +2,8 @@
 # SPDX-License-Identifier: MPL-2.0
 
 variable "region" {
-  default     = "us-east-2"
+  default     = "us-east-1"
   description = "AWS region"
-}
-
-variable "tf_bucket" {
-  description = "Bucket for Terraform State"
-  sensitive   = true
 }
 
 variable "db_password" {

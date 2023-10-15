@@ -1,24 +1,6 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.52.0"
-    }
-  }
-
-  backend "s3" {
-    bucket = var.tf_bucket
-    key    = "tfstate/rds.tf"
-    region = var.region
-    profile = "default"
-    encrypt = true
-    dynamodb_table = "terraform-state-lock"
-  }
-}
-
 provider "aws" {
   region = var.region
 }
