@@ -6,7 +6,13 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "db_user" {
+  description = "RDS root user"
+  sensitive   = true
+}
+
 variable "db_password" {
   description = "RDS root user password"
   sensitive   = true
 }
+
