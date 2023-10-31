@@ -16,3 +16,12 @@ variable "db_password" {
   sensitive   = true
 }
 
+variable "db_port" {
+  description = "RDS port"
+  sensitive   = true
+}
+
+variable "db_name" {
+  description = "Database name"
+  sensitive   = true
+}

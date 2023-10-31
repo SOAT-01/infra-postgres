@@ -8,7 +8,7 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
+  source = "terraform-aws-modules/vpc/aws"
 
   name                 = "fast_food"
   cidr                 = "10.0.0.0/16"
@@ -58,6 +58,11 @@ resource "aws_db_parameter_group" "fast_food" {
     name  = "log_connections"
     value = "1"
   }
+
+  parameter {
+    name  = "rds.force_ssl"
+    value = "0"
+  }
 }
 
 resource "aws_db_instance" "fast_food" {
@@ -74,4 +79,20 @@ resource "aws_db_instance" "fast_food" {
   publicly_accessible    = true
   skip_final_snapshot    = true
   apply_immediately      = true
+}
+
+
+provider "postgresql" {
+  scheme   = "postgres"
+  host     = aws_db_instance.fast_food.address
+  port     = var.db_port
+  username = var.db_user
+  password = var.db_password
+}
+
+resource "postgresql_database" "fast_food" {
+  name              = var.db_name
+  owner             = var.db_user
+  connection_limit  = -1
+  allow_connections = true
 }

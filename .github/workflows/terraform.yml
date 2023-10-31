@@ -25,13 +25,13 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Configure AWS Credentials Action For GitHub Actions
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -53,6 +53,8 @@ jobs:
         env:
           TF_VAR_db_user: ${{ secrets.DB_USER }}
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_db_port: ${{ secrets.DB_PORT }}
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
 
       - name: Update Pull Request
@@ -95,6 +97,8 @@ jobs:
         env:
           TF_VAR_db_user: ${{ secrets.DB_USER }}
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_db_port: ${{ secrets.DB_PORT }}
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
   
   terraform_destroy:
@@ -105,13 +109,13 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Configure AWS Credentials Action For GitHub Actions
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -126,4 +130,6 @@ jobs:
         env:
           TF_VAR_db_user: ${{ secrets.DB_USER }}
           TF_VAR_db_password: ${{ secrets.DB_PWD }}
+          TF_VAR_db_port: ${{ secrets.DB_PORT }}
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
