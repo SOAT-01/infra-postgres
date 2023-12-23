@@ -18,6 +18,5 @@ terraform {
     key            = "rds/main.tf"
     profile        = "default"
     encrypt        = true
-    dynamodb_table = "terraform-state-lock"
   }
 }
