@@ -36,7 +36,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-          aws-session-token: ${{ secrets.AWS_TOKEN }}
 
       - name: Terraform Init
         id: init
@@ -57,6 +56,10 @@ jobs:
           TF_VAR_db_port: ${{ secrets.DB_PORT }}
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_produto_user: ${{ secrets.PRODUTO_USER }}
+          TF_VAR_produto_password: ${{ secrets.PRODUTO_PWD }}
+          TF_VAR_cliente_user: ${{ secrets.CLIENTE_USER }}
+          TF_VAR_cliente_password: ${{ secrets.CLIENTE_PWD }}
 
       - name: Update Pull Request
         uses: actions/github-script@v6
@@ -101,6 +104,10 @@ jobs:
           TF_VAR_db_port: ${{ secrets.DB_PORT }}
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_produto_user: ${{ secrets.PRODUTO_USER }}
+          TF_VAR_produto_password: ${{ secrets.PRODUTO_PWD }}
+          TF_VAR_cliente_user: ${{ secrets.CLIENTE_USER }}
+          TF_VAR_cliente_password: ${{ secrets.CLIENTE_PWD }}
   
   terraform_destroy:
     name: "Terraform Destroy"
@@ -121,7 +128,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-          aws-session-token: ${{ secrets.AWS_TOKEN }}
 
       - name: Terraform Init
         id: init
@@ -135,3 +141,7 @@ jobs:
           TF_VAR_db_port: ${{ secrets.DB_PORT }}
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_produto_user: ${{ secrets.PRODUTO_USER }}
+          TF_VAR_produto_password: ${{ secrets.PRODUTO_PWD }}
+          TF_VAR_cliente_user: ${{ secrets.CLIENTE_USER }}
+          TF_VAR_cliente_password: ${{ secrets.CLIENTE_PWD }}
