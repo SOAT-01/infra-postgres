@@ -25,3 +25,23 @@ variable "db_name" {
   description = "Database name"
   sensitive   = true
 }
+
+variable "produto_user" {
+  description = "Produto DB user"
+  sensitive   = true
+}
+
+variable "produto_password" {
+  description = "Produto DB password"
+  sensitive   = true
+}
+
+variable "cliente_user" {
+  description = "Cliente DB user"
+  sensitive   = true
+}
+
+variable "cliente_password" {
+  description = "Cliente DB password"
+  sensitive   = true
+}

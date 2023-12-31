@@ -88,6 +88,7 @@ provider "postgresql" {
   port     = var.db_port
   username = var.db_user
   password = var.db_password
+  superuser = false
 }
 
 resource "postgresql_database" "fast_food" {
@@ -95,4 +96,54 @@ resource "postgresql_database" "fast_food" {
   owner             = var.db_user
   connection_limit  = -1
   allow_connections = true
+}
+
+resource "postgresql_role" "cliente_role" {
+  name = "cliente_role"
+}
+
+resource "postgresql_role" "produto_role" {
+  name = "produto_role"
+}
+
+resource "postgresql_role" "produto_user" {                                                                                                                                                 
+  name     = var.produto_user                                                                                                                                                                
+  password = var.produto_password                                                                                                                                                          
+  login    = true                                                                                                                                                                            
+  roles = [postgresql_role.produto_role.name]                                                                                                                                               
+}
+
+resource "postgresql_role" "cliente_user" {                                                                                                                                                 
+  name     = var.cliente_user                                                                                                                                                                 
+  password = var.cliente_password                                                                                                                                                          
+  login    = true                                                                                                                                                                            
+  roles = [postgresql_role.cliente_role.name]                                                                                                                                               
+}
+
+resource "postgresql_schema" "clientes" {
+  name = "clientes"
+  database = postgresql_database.fast_food.name
+  owner = var.db_user
+}
+
+resource "postgresql_schema" "produtos" {
+  name = "produtos"
+  database = postgresql_database.fast_food.name
+  owner = var.db_user
+}
+
+resource "postgresql_grant" "grant_clientes" {
+  database    = postgresql_database.fast_food.name
+  role        = postgresql_role.cliente_role.name
+  schema      = postgresql_schema.clientes.name
+  object_type = "schema"
+  privileges  = ["ALL"]
+}
+
+resource "postgresql_grant" "grant_produtos" {
+  database    = postgresql_database.fast_food.name
+  role        = postgresql_role.produto_role.name
+  schema      = postgresql_schema.produtos.name
+  object_type = "schema"
+  privileges  = ["ALL"]
 }
