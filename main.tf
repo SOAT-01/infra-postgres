@@ -121,13 +121,19 @@ resource "postgresql_role" "cliente_user" {
 }
 
 resource "postgresql_schema" "clientes" {
-  name = "clientes"
+  name = "cliente"
   database = postgresql_database.fast_food.name
   owner = var.db_user
 }
 
 resource "postgresql_schema" "produtos" {
-  name = "produtos"
+  name = "produto"
+  database = postgresql_database.fast_food.name
+  owner = var.db_user
+}
+
+resource "postgresql_schema" "drizzle" {
+  name = "drizzle"
   database = postgresql_database.fast_food.name
   owner = var.db_user
 }
@@ -140,10 +146,26 @@ resource "postgresql_grant" "grant_clientes" {
   privileges  = ["ALL"]
 }
 
+resource "postgresql_grant" "grant_clientes_drizzle" {
+  database    = postgresql_database.fast_food.name
+  role        = postgresql_role.cliente_role.name
+  schema      = postgresql_schema.drizzle.name
+  object_type = "schema"
+  privileges  = ["ALL"]
+}
+
 resource "postgresql_grant" "grant_produtos" {
   database    = postgresql_database.fast_food.name
   role        = postgresql_role.produto_role.name
   schema      = postgresql_schema.produtos.name
+  object_type = "schema"
+  privileges  = ["ALL"]
+}
+
+resource "postgresql_grant" "grant_produtos_drizzle" {
+  database    = postgresql_database.fast_food.name
+  role        = postgresql_role.produto_role.name
+  schema      = postgresql_schema.drizzle.name
   object_type = "schema"
   privileges  = ["ALL"]
 }
