@@ -79,12 +79,20 @@ resource "aws_db_instance" "fast_food" {
   publicly_accessible    = true
   skip_final_snapshot    = true
   apply_immediately      = true
+  depends_on = [aws_security_group.rds, aws_db_parameter_group.fast_food, aws_db_subnet_group.fast_food]
 }
 
+resource "aws_ssm_parameter" "db_hostname" {
+  name        = "/db/db_hostname"
+  type        = "SecureString"
+  description = "DB Hostname"
+  value       = aws_db_instance.fast_food.address
+  depends_on = [aws_db_instance.fast_food ]
+}
 
 provider "postgresql" {
   scheme   = "postgres"
-  host     = aws_db_instance.fast_food.address
+  host     = aws_ssm_parameter.db_hostname.value
   port     = var.db_port
   username = var.db_user
   password = var.db_password
@@ -96,46 +104,54 @@ resource "postgresql_database" "fast_food" {
   owner             = var.db_user
   connection_limit  = -1
   allow_connections = true
+  depends_on = [aws_db_instance.fast_food ]
 }
 
 resource "postgresql_role" "cliente_role" {
   name = "cliente_role"
+  depends_on = [postgresql_database.fast_food ]
 }
 
 resource "postgresql_role" "produto_role" {
   name = "produto_role"
+  depends_on = [postgresql_database.fast_food ]
 }
 
 resource "postgresql_role" "produto_user" {                                                                                                                                                 
   name     = var.produto_user                                                                                                                                                                
   password = var.produto_password                                                                                                                                                          
   login    = true                                                                                                                                                                            
-  roles = [postgresql_role.produto_role.name]                                                                                                                                               
+  roles = [postgresql_role.produto_role.name]     
+  depends_on = [postgresql_database.fast_food ]                                                                                                                                          
 }
 
 resource "postgresql_role" "cliente_user" {                                                                                                                                                 
   name     = var.cliente_user                                                                                                                                                                 
   password = var.cliente_password                                                                                                                                                          
   login    = true                                                                                                                                                                            
-  roles = [postgresql_role.cliente_role.name]                                                                                                                                               
+  roles = [postgresql_role.cliente_role.name]         
+  depends_on = [postgresql_database.fast_food ]                                                                                                                                      
 }
 
 resource "postgresql_schema" "clientes" {
   name = "cliente"
   database = postgresql_database.fast_food.name
   owner = var.db_user
+  depends_on = [postgresql_database.fast_food ]
 }
 
 resource "postgresql_schema" "produtos" {
   name = "produto"
   database = postgresql_database.fast_food.name
   owner = var.db_user
+  depends_on = [postgresql_database.fast_food ]
 }
 
 resource "postgresql_schema" "drizzle" {
   name = "drizzle"
   database = postgresql_database.fast_food.name
   owner = var.db_user
+  depends_on = [postgresql_database.fast_food ]
 }
 
 resource "postgresql_grant" "grant_clientes" {
@@ -144,6 +160,7 @@ resource "postgresql_grant" "grant_clientes" {
   schema      = postgresql_schema.clientes.name
   object_type = "schema"
   privileges  = ["ALL"]
+  depends_on = [postgresql_database.fast_food ]
 }
 
 resource "postgresql_grant" "grant_clientes_drizzle" {
@@ -152,6 +169,7 @@ resource "postgresql_grant" "grant_clientes_drizzle" {
   schema      = postgresql_schema.drizzle.name
   object_type = "schema"
   privileges  = ["ALL"]
+  depends_on = [postgresql_grant.grant_clientes ]
 }
 
 resource "postgresql_grant" "grant_produtos" {
@@ -160,6 +178,7 @@ resource "postgresql_grant" "grant_produtos" {
   schema      = postgresql_schema.produtos.name
   object_type = "schema"
   privileges  = ["ALL"]
+  depends_on = [postgresql_grant.grant_clientes_drizzle ]
 }
 
 resource "postgresql_grant" "grant_produtos_drizzle" {
@@ -168,4 +187,5 @@ resource "postgresql_grant" "grant_produtos_drizzle" {
   schema      = postgresql_schema.drizzle.name
   object_type = "schema"
   privileges  = ["ALL"]
+  depends_on = [postgresql_grant.grant_produtos ]
 }
