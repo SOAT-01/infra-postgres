@@ -21,11 +21,6 @@ variable "db_port" {
   sensitive   = true
 }
 
-variable "db_name" {
-  description = "Database name"
-  sensitive   = true
-}
-
 variable "produto_user" {
   description = "Produto DB user"
   sensitive   = true
