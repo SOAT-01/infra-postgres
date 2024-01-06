@@ -99,8 +99,8 @@ provider "postgresql" {
   superuser = false
 }
 
-resource "postgresql_database" "fast_food" {
-  name              = var.db_name
+resource "postgresql_database" "cliente" {
+  name              = "cliente"
   owner             = var.db_user
   connection_limit  = -1
   allow_connections = true
@@ -109,20 +109,7 @@ resource "postgresql_database" "fast_food" {
 
 resource "postgresql_role" "cliente_role" {
   name = "cliente_role"
-  depends_on = [postgresql_database.fast_food ]
-}
-
-resource "postgresql_role" "produto_role" {
-  name = "produto_role"
-  depends_on = [postgresql_database.fast_food ]
-}
-
-resource "postgresql_role" "produto_user" {                                                                                                                                                 
-  name     = var.produto_user                                                                                                                                                                
-  password = var.produto_password                                                                                                                                                          
-  login    = true                                                                                                                                                                            
-  roles = [postgresql_role.produto_role.name]     
-  depends_on = [postgresql_database.fast_food ]                                                                                                                                          
+  depends_on = [postgresql_database.cliente ]
 }
 
 resource "postgresql_role" "cliente_user" {                                                                                                                                                 
@@ -130,62 +117,60 @@ resource "postgresql_role" "cliente_user" {
   password = var.cliente_password                                                                                                                                                          
   login    = true                                                                                                                                                                            
   roles = [postgresql_role.cliente_role.name]         
-  depends_on = [postgresql_database.fast_food ]                                                                                                                                      
+  depends_on = [postgresql_database.cliente ]                                                                                                                                      
 }
 
-resource "postgresql_schema" "clientes" {
-  name = "cliente"
-  database = postgresql_database.fast_food.name
-  owner = var.db_user
-  depends_on = [postgresql_database.fast_food ]
-}
-
-resource "postgresql_schema" "produtos" {
-  name = "produto"
-  database = postgresql_database.fast_food.name
-  owner = var.db_user
-  depends_on = [postgresql_database.fast_food ]
-}
-
-resource "postgresql_schema" "drizzle" {
-  name = "drizzle"
-  database = postgresql_database.fast_food.name
-  owner = var.db_user
-  depends_on = [postgresql_database.fast_food ]
-}
-
-resource "postgresql_grant" "grant_clientes" {
-  database    = postgresql_database.fast_food.name
+resource "postgresql_grant" "grant_cliente" {
+  database    = postgresql_database.cliente.name
   role        = postgresql_role.cliente_role.name
-  schema      = postgresql_schema.clientes.name
-  object_type = "schema"
+  object_type = "database"
   privileges  = ["ALL"]
-  depends_on = [postgresql_database.fast_food ]
+  depends_on = [postgresql_database.cliente ]
 }
 
-resource "postgresql_grant" "grant_clientes_drizzle" {
-  database    = postgresql_database.fast_food.name
+resource "postgresql_grant" "grant_public_cliente" {
+  database    = postgresql_database.cliente.name
   role        = postgresql_role.cliente_role.name
-  schema      = postgresql_schema.drizzle.name
+  schema      = "public"
   object_type = "schema"
   privileges  = ["ALL"]
-  depends_on = [postgresql_grant.grant_clientes ]
+  depends_on = [postgresql_database.cliente ]
 }
 
-resource "postgresql_grant" "grant_produtos" {
-  database    = postgresql_database.fast_food.name
-  role        = postgresql_role.produto_role.name
-  schema      = postgresql_schema.produtos.name
-  object_type = "schema"
-  privileges  = ["ALL"]
-  depends_on = [postgresql_grant.grant_clientes_drizzle ]
+resource "postgresql_database" "produto" {
+  name              = "produto"
+  owner             = var.db_user
+  connection_limit  = -1
+  allow_connections = true
+  depends_on = [aws_db_instance.fast_food ]
 }
 
-resource "postgresql_grant" "grant_produtos_drizzle" {
-  database    = postgresql_database.fast_food.name
+resource "postgresql_role" "produto_role" {
+  name = "produto_role"
+  depends_on = [postgresql_database.produto ]
+}
+
+resource "postgresql_role" "produto_user" {                                                                                                                                                 
+  name     = var.produto_user                                                                                                                                                                
+  password = var.produto_password                                                                                                                                                          
+  login    = true                                                                                                                                                                            
+  roles = [postgresql_role.produto_role.name]     
+  depends_on = [postgresql_database.produto ]                                                                                                                                          
+}
+
+resource "postgresql_grant" "grant_produto" {
+  database    = postgresql_database.produto.name
   role        = postgresql_role.produto_role.name
-  schema      = postgresql_schema.drizzle.name
+  object_type = "database"
+  privileges  = ["ALL"]
+  depends_on = [postgresql_database.produto ]
+}
+
+resource "postgresql_grant" "grant_public_produto" {
+  database    = postgresql_database.produto.name
+  role        = postgresql_role.produto_role.name
+  schema      = "public"
   object_type = "schema"
   privileges  = ["ALL"]
-  depends_on = [postgresql_grant.grant_produtos ]
+  depends_on = [postgresql_database.produto ]
 }
